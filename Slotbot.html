@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Slot Request Form</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #d3ccb0;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      color: #333;
+    }
+    
+      .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+    position: relative;
+    }
+
+    .header img {
+      height: 80px; /* Adjust as needed */
+      margin-left: -400px;
+    }
+
+    .header h2 {
+    font-family: 'Lato', sans-serif;
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    position: absolute; /* Ensures it stays in the center */
+    left: 50%; /* Horizontal center */
+    transform: translateX(-50%);
+    }
+
+    form {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    label {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="time"], input[type="date"], select, textarea {
+      width: calc(100% - 20px);
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="button"] {
+      background: #ffffff;
+      color: #000000;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+      margin-right: 10px;
+    }
+
+    input[type="button"]:hover {
+      background: #d3ccb0;
+    }
+
+    .template-display {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-family: monospace;
+      color: #333;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    footer {
+      margin-top: 30px;
+      color: #555;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    footer a {
+      color: #2761cc;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="coordinated.png" alt="Coordinated Logo" style="align-self: flex-start;"> <!-- Replace with the correct path -->
+    <h2 style="flex: 1; text-align: center;">Slot Request Form</h2>
+  </div>
+
+<form id="slotRequestForm">
+  <label for="request_type">Request Type:</label>
+  <select id="request_type" name="request_type" required class="full-width" onchange="toggleFields()">
+    <option value="new">New</option>
+    <option value="sir">SIR</option>
+    <option value="change_and_revise">Change and Revise</option>
+  </select>
+
+  <div id="sirFields" style="display:none;">
+    <label for="sir_multi_dates">Select Dates for SIR Slots:</label>
+    <input type="text" id="sir_multi_dates" placeholder="Select dates" required class="full-width">
+    <label for="station">Station (IATA CODE):</label>
+    <input type="text" id="station" name="station" required class="full-width">
+    <label for="call_sign">Call Sign:</label>
+    <input type="text" id="call_sign" name="call_sign" required class="full-width">
+  </div>
+
+  <div id="newFields">
+    <label for="multi_dates">Date:</label>
+    <input type="text" id="multi_dates" placeholder="Select dates" required class="full-width">
+    <label for="slot_time">Slot Time:</label>
+    <input type="time" id="slot_time" name="slot_time" required>
+    <label for="flight_number">Flight Number:</label>
+    <input type="text" id="flight_number" name="flight_number" required>
+    <label for="departure_airport">Departure Airport (IATA):</label>
+    <input type="text" id="departure_airport" name="departure_airport" required>
+    <label for="arrival_airport">Arrival Airport (IATA):</label>
+    <input type="text" id="arrival_airport" name="arrival_airport" required>
+    <label for="slot_type">Slot Type:</label>
+    <select id="slot_type" name="slot_type" required>
+      <option value="arrival">Arrival</option>
+      <option value="departure">Departure</option>
+    </select>
+    <label for="aircraft_type">Aircraft Type:</label>
+    <select id="aircraft_type" name="aircraft_type" required>
+      <option value="00032X">Airbus A320</option>
+      <option value="1897M8">Boeing 737-800 Max</option>
+    </select>
+  </div>
+
+  <label for="additional_notes">Additional Notes:</label>
+  <textarea id="additional_notes" name="additional_notes" rows="4" cols="50" class="full-width"></textarea>
+
+  <input type="button" value="Generate Slots" onclick="generateTemplate()">
+  <input type="button" value="Copy Template" onclick="copyTemplate()">
+</form>
+
+<div id="template" class="template-display"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+let selectedDates = [];
+let selectedSirDates = [];
+
+// Initialize flatpickr for both date fields
+flatpickr("#multi_dates", {
+  mode: "multiple",
+  dateFormat: "Y-m-d",
+  onChange: function(dates) {
+    selectedDates = dates;
+  }
+});
+
+flatpickr("#sir_multi_dates", {
+  mode: "multiple",
+  dateFormat: "Y-m-d",
+  onChange: function(dates) {
+    selectedSirDates = dates;
+  }
+});
+
+function toggleFields() {
+  const requestType = document.getElementById("request_type").value;
+  document.getElementById("sirFields").style.display = requestType === "sir" ? "block" : "none";
+  document.getElementById("newFields").style.display = requestType === "new" ? "block" : "none";
+}
+
+function formatDayOfWeek(date) {
+  const daysOfWeek = ["0000007", "1000000", "0200000", "0030000", "0004000", "0000500", "0000060"];
+  return daysOfWeek[new Date(date).getDay()];
+}
+
+function formatTime(time) {
+  const [hours, minutes] = time.split(':');
+  return hours + minutes;
+}
+
+function formatDate(date) {
+  const day = ("0" + date.getDate()).slice(-2);
+  const month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+  return day + month;
+}
+
+function getIATASeason(date) {
+  const month = date.getMonth();
+  const year = date.getFullYear() % 100;
+  return (month >= 3 && month <= 9) ? `S${year}` : `W${year}`;
+}
+
+function generateTemplate() {
+  const requestType = document.getElementById("request_type").value;
+  if (requestType === "new") {
+    generateNewTemplate();
+  } else if (requestType === "sir") {
+    generateSirTemplate();
+  }
+}
+
+function generateNewTemplate() {
+  if (selectedDates.length === 0) {
+    alert("Please select at least one date.");
+    return;
+  }
+
+  const today = new Date();
+  const requestDate = formatDate(today);
+  const slotTime = formatTime(document.getElementById("slot_time").value);
+  const flightNumber = document.getElementById("flight_number").value;
+  const departureAirport = document.getElementById("departure_airport").value.toUpperCase();
+  const arrivalAirport = document.getElementById("arrival_airport").value.toUpperCase();
+  const slotType = document.getElementById("slot_type").value;
+  const aircraftType = document.getElementById("aircraft_type").value;
+  const additionalNotes = document.getElementById("additional_notes").value;
+  const season = getIATASeason(today);
+
+  // Determine the station based on slot type
+  const station = slotType === "departure" ? departureAirport : arrivalAirport;
+
+  let templateContent = `
+SCR
+${season}
+${requestDate}
+${station}
+`;
+
+  selectedDates.forEach(date => {
+    const formattedDate = formatDate(new Date(date));
+    const formattedDayOfWeek = formatDayOfWeek(date);
+
+    if (slotType === "departure") {
+      templateContent += `N ${flightNumber} ${formattedDate}${formattedDate} ${formattedDayOfWeek} ${aircraftType} ${slotTime}${arrivalAirport} C\n`;
+    } else { // Arrival slot
+      templateContent += `N${flightNumber} ${formattedDate}${formattedDate} ${formattedDayOfWeek} ${aircraftType} ${departureAirport}${slotTime} C\n`;
+    }
+  });
+
+  templateContent += `SI ${additionalNotes}\nGI BEST REGARDS,`;
+  document.getElementById("template").innerText = templateContent;
+}
+
+function generateSirTemplate() {
+  if (selectedSirDates.length === 0) {
+    alert("Please select at least one date.");
+    return;
+  }
+
+  const today = new Date();
+  const requestDate = formatDate(today);
+  const station = document.getElementById("station").value.toUpperCase();
+  const callSign = document.getElementById("call_sign").value.toUpperCase();
+  const additionalNotes = document.getElementById("additional_notes").value;
+  const season = getIATASeason(today);
+
+  selectedSirDates.sort((a, b) => new Date(a) - new Date(b));
+  const startDate = formatDate(new Date(selectedSirDates[0]));
+  const endDate = formatDate(new Date(selectedSirDates[selectedSirDates.length - 1]));
+
+  let templateContent = `
+SIR
+${season}
+${requestDate}
+${station}
+Q${callSign} ${callSign}${startDate}${endDate}
+SI ${additionalNotes}
+GI BEST REGARDS,
+`;
+
+  document.getElementById("template").innerText = templateContent;
+}
+
+function copyTemplate() {
+  const template = document.getElementById("template").innerText;
+  navigator.clipboard.writeText(template).then(() => {
+    alert('Template copied to clipboard!');
+  }, (err) => {
+    console.error('Could not copy text: ', err);
+  });
+}
+</script>
+
+</body>
+<footer>
+  <p>For the latest information, visit the 
+    <a href="https://www.iata.org/en/programs/ops-infra/slots/coordinated-airports/" target="_blank">
+      IATA Coordinated Airports Program 
+    </a>.
+  </p>
+</footer>
+</html>
