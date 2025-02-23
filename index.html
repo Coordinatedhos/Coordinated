@@ -3,11 +3,12 @@
 <head>
   <title>Slot Request Form</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     body {
-      font-family: 'Open Sans', sans-serif;
-      background-color: #d3ccb0;
+      font-family: 'Source Sans Pro', sans-serif;
+      background-color: #F5F5F5;
       margin: 0;
       padding: 20px;
       display: flex;
@@ -18,47 +19,58 @@
       color: #333;
     }
     
-      .header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 800px;
-    margin-bottom: 20px;
-    position: relative;
+    /* Header Styling */
+    .header {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 20px; /* More space below the header */
+      margin-top: 10px; /* More space above the header */
+      position: relative;
     }
 
+    /* Logo Placement */
     .header img {
-      height: 80px; /* Adjust as needed */
-      margin-left: -400px;
+      height: 90px; /* Increased logo size */
+      margin-left: 0; /* Aligns to left */
     }
 
+    /* Center Title (Slot Request Form) */
     .header h2 {
-    font-family: 'Lato', sans-serif;
-    color: #ffffff;
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    position: absolute; /* Ensures it stays in the center */
-    left: 50%; /* Horizontal center */
-    transform: translateX(-50%);
+      font-family: 'Montserrat', sans-serif;
+      color: #353535;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0 auto; /* Center the title */
+      text-align: center;
+      flex-grow: 1; /* Allows it to stay centered */
     }
 
+    /* Form Container */
     form {
       background: #ffffff;
-      padding: 25px;
+      padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       max-width: 800px;
       width: 100%;
     }
 
+    /* Labels */
     label {
       font-size: 1rem;
       color: #555;
       margin-bottom: 5px;
+      font-family: 'Source Sans Pro', sans-serif;
     }
 
-    input[type="text"], input[type="time"], input[type="date"], select, textarea {
+    /* Input Fields */
+    input[type="text"], 
+    input[type="time"], 
+    input[type="date"], 
+    select, 
+    textarea {
       width: calc(100% - 20px);
       padding: 12px;
       margin-bottom: 15px;
@@ -66,8 +78,10 @@
       border-radius: 5px;
       font-size: 1rem;
       transition: all 0.3s ease;
+      font-family: 'Source Sans Pro', sans-serif;
     }
 
+    /* Buttons */
     input[type="button"] {
       background: #ffffff;
       color: #000000;
@@ -78,24 +92,27 @@
       font-size: 1rem;
       transition: background-color 0.3s ease;
       margin-right: 10px;
+      font-family: 'Source Sans Pro', sans-serif;
     }
 
     input[type="button"]:hover {
       background: #d3ccb0;
     }
 
+    /* Template Display */
     .template-display {
       background-color: #f9f9f9;
       padding: 15px;
       border-radius: 8px;
       margin-top: 20px;
-      font-family: monospace;
+      font-family: 'Source Sans Pro', sans-serif;
       color: #333;
       max-width: 100%;
       overflow-wrap: break-word;
       white-space: pre-wrap;
     }
 
+    /* Footer */
     footer {
       margin-top: 30px;
       color: #555;
@@ -116,6 +133,7 @@
 <body>
 
   <div class="header">
+   
     <h2 style="flex: 1; text-align: center;">Slot Request Form</h2>
   </div>
 
@@ -154,7 +172,7 @@
     </select>
     <label for="aircraft_type">Aircraft Type:</label>
     <select id="aircraft_type" name="aircraft_type" required>
-      <option value="00032X">Airbus A320</option>
+      <option value="000320">Airbus A320</option>
       <option value="1897M8">Boeing 737-800 Max</option>
     </select>
   </div>
