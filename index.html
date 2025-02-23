@@ -5,47 +5,58 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="icon" type="image/png" href="favicon.png">
   <style>
-    body {
-      font-family: 'Source Sans Pro', sans-serif;
-      background-color: #F5F5F5;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      color: #333;
-    }
-    
-    /* Header Styling */
-    .header {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 20px; /* More space below the header */
-      margin-top: 10px; /* More space above the header */
-      position: relative;
-    }
+   body {
+  font-family: 'Source Sans Pro', sans-serif;
+  background-color: #F5F5F5;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  color: #333;
+  position: relative; /* Required for absolute positioning */
+}
 
-    /* Logo Placement */
-    .header img {
-      height: 90px; /* Increased logo size */
-      margin-left: 0; /* Aligns to left */
-    }
+/* LOGO CONTAINER - Keeps logo at the top-left */
+.logo-container {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
 
-    /* Center Title (Slot Request Form) */
-    .header h2 {
-      font-family: 'Montserrat', sans-serif;
-      color: #353535;
-      font-size: 2.2rem;
-      font-weight: 700;
-      margin: 0 auto; /* Center the title */
-      text-align: center;
-      flex-grow: 1; /* Allows it to stay centered */
-    }
+/* FIXED LOGO SIZE */
+.logo-container img {
+  height: 150px;  /* Set height */
+  width: auto;   /* Maintain aspect ratio */
+  max-width: 300px; /* Prevents oversized logos */
+}
+
+/* HEADER (Centers Title) */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Keeps title centered */
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  position: relative;
+}
+
+/* HEADER TITLE - Ensures it stays centered */
+.header h2 {
+  font-family: 'Montserrat', sans-serif;
+  color: #353535;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  flex-grow: 1;
+}
 
     /* Form Container */
     form {
@@ -132,10 +143,15 @@
 </head>
 <body>
 
-  <div class="header">
-   
-    <h2 style="flex: 1; text-align: center;">Slot Request Form</h2>
-  </div>
+  <div class="logo-container">
+    <img src="images/coordinated.png" alt="Coordinated Logo">
+</div>
+
+<!-- CENTERED TITLE -->
+<div class="header">
+    <h2>Slot Request Form</h2>
+</div>
+
 
 <form id="slotRequestForm">
   <label for="request_type">Request Type:</label>
@@ -231,11 +247,23 @@ function formatDate(date) {
 }
 
 function getIATASeason(date) {
-  const month = date.getMonth();
-  const year = date.getFullYear() % 100;
-  return (month >= 3 && month <= 9) ? `S${year}` : `W${year}`;
-}
+    const year = date.getFullYear();
+    const month = date.getMonth(); // 0 = January, 11 = December
 
+    // Find the last Sunday of March
+    let lastSundayMarch = new Date(year, 2, 31); // March 31
+    lastSundayMarch.setDate(lastSundayMarch.getDate() - lastSundayMarch.getDay());
+
+    // Find the last Sunday of October
+    let lastSundayOctober = new Date(year, 9, 31); // October 31
+    lastSundayOctober.setDate(lastSundayOctober.getDate() - lastSundayOctober.getDay());
+
+    if (date >= lastSundayMarch && date < lastSundayOctober) {
+        return `S${year % 100}`;  // Summer
+    } else {
+        return `W${(month < 2 ? (year - 1) % 100 : year % 100)}`; // Winter
+    }
+}
 function generateTemplate() {
   const requestType = document.getElementById("request_type").value;
   if (requestType === "new") {
@@ -260,7 +288,7 @@ function generateNewTemplate() {
   const slotType = document.getElementById("slot_type").value;
   const aircraftType = document.getElementById("aircraft_type").value;
   const additionalNotes = document.getElementById("additional_notes").value;
-  const season = getIATASeason(today);
+  const season = getIATASeason(new Date(selectedDates[0]));
 
   // Determine the station based on slot type
   const station = slotType === "departure" ? departureAirport : arrivalAirport;
@@ -333,6 +361,10 @@ function copyTemplate() {
     <a href="https://www.iata.org/en/programs/ops-infra/slots/coordinated-airports/" target="_blank">
       IATA Coordinated Airports Program 
     </a>.
+  </p>
+</footer>
+</html>
+
   </p>
 </footer>
 </html>
